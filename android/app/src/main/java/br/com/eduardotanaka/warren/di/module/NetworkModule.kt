@@ -1,5 +1,6 @@
 package br.com.eduardotanaka.warren.di.module
 
+import br.com.eduardotanaka.warren.data.interceptor.WarrenInterceptor
 import br.com.warren.challange.BuildConfig
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -26,10 +27,16 @@ class NetworkModule {
 
     @Singleton
     @Provides
+    fun providesWarrenInterceptor(): WarrenInterceptor = WarrenInterceptor()
+
+    @Singleton
+    @Provides
     fun provideOkHttpClient(
+        warrenInterceptor: WarrenInterceptor,
         httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(warrenInterceptor)
             .addInterceptor(httpLoggingInterceptor)
             .build()
     }
