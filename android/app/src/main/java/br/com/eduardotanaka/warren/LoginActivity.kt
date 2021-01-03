@@ -2,6 +2,7 @@ package br.com.eduardotanaka.warren
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import br.com.warren.challange.R
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
