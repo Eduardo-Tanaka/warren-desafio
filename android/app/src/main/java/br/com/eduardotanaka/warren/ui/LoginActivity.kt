@@ -1,4 +1,4 @@
-package br.com.eduardotanaka.warren
+package br.com.eduardotanaka.warren.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
