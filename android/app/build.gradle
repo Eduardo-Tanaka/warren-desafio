@@ -20,9 +20,15 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "WarrenBaseUrl", "\"https://enigmatic-bayou-48219.herokuapp.com/\"")
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField("String", "WarrenBaseUrl", "\"https://enigmatic-bayou-48219.herokuapp.com/\"")
         }
     }
     compileOptions {
