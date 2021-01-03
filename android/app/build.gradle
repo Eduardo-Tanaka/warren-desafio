@@ -45,6 +45,7 @@ dependencies {
     def daggerVersion = '2.30.1'
     def lifecycleVersion = '2.2.0'
     def okhttpVersion = '4.4.0'
+    def preferenceVersion = '1.1.1'
     def retrofitVersion = '2.9.0'
     def roomVersion = '2.2.6'
 
@@ -71,6 +72,9 @@ dependencies {
     // okhttp (network middleware)
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+
+    // Preferences
+    implementation "androidx.preference:preference-ktx:$preferenceVersion"
 
     // Retrofit (Network layer)
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
