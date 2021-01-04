@@ -24,7 +24,6 @@ class LoginActivity : BaseActivity() {
         viewModel.getToken(login)
 
         viewModel.token.observe(this, {
-            Log.d(tag, "aqui")
             if (it.state == StatefulResource.State.SUCCESS && it.hasData()) {
                 Log.d(tag, it.resource?.data.toString())
             }

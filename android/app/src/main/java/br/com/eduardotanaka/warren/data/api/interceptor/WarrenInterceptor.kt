@@ -1,4 +1,4 @@
-package br.com.eduardotanaka.warren.data.interceptor
+package br.com.eduardotanaka.warren.data.api.interceptor
 
 import okhttp3.Interceptor
 import okhttp3.Response

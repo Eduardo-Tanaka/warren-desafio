@@ -5,11 +5,15 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import br.com.eduardotanaka.warren.data.repository.base.Resource
 import br.com.eduardotanaka.warren.data.repository.helpers.DataFetchHelper.DataFetchStyle
-import br.com.eduardotanaka.warren.data.repository.helpers.DataFetchHelper.DataFetchStyle.*
+import br.com.eduardotanaka.warren.data.repository.helpers.DataFetchHelper.DataFetchStyle.Result
 import br.com.eduardotanaka.warren.util.RepositoryUtil
 import br.com.eduardotanaka.warren.util.onMainThread
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import retrofit2.Response
+
 
 /**
  * This helper class encapsulates some of the common data fetch styles (defined here [DataFetchStyle])
@@ -162,7 +166,7 @@ abstract class DataFetchHelper<T>(
         tag: String
     ) : DataFetchHelper<S>(
         tag,
-        LOCAL_ONLY
+        DataFetchStyle.LOCAL_ONLY
     ) {
         abstract override suspend fun getDataFromLocal(): S
     }
@@ -171,7 +175,7 @@ abstract class DataFetchHelper<T>(
         tag: String
     ) : DataFetchHelper<S>(
         tag,
-        NETWORK_ONLY
+        DataFetchStyle.NETWORK_ONLY
     ) {
         abstract override suspend fun getDataFromNetwork(): Response<out Any?>
         abstract override suspend fun convertApiResponseToData(response: Response<out Any?>): S
@@ -185,7 +189,7 @@ abstract class DataFetchHelper<T>(
         cacheLengthSeconds: Long
     ) : DataFetchHelper<S>(
         tag,
-        LOCAL_FIRST_NETWORK_REFRESH_ALWAYS,
+        DataFetchStyle.LOCAL_FIRST_NETWORK_REFRESH_ALWAYS,
         sharedPreferences,
         cacheKey,
         cacheDescriptor,
@@ -205,7 +209,7 @@ abstract class DataFetchHelper<T>(
         cacheLengthSeconds: Long
     ) : DataFetchHelper<S>(
         tag,
-        LOCAL_FIRST_UNTIL_STALE,
+        DataFetchStyle.LOCAL_FIRST_UNTIL_STALE,
         sharedPreferences,
         cacheKey,
         cacheDescriptor,
@@ -221,7 +225,7 @@ abstract class DataFetchHelper<T>(
         tag: String
     ) : DataFetchHelper<S>(
         tag,
-        NETWORK_FIRST_LOCAL_FAILOVER
+        DataFetchStyle.NETWORK_FIRST_LOCAL_FAILOVER
     ) {
         abstract override suspend fun getDataFromLocal(): S
         abstract override suspend fun getDataFromNetwork(): Response<out Any?>
@@ -305,53 +309,59 @@ abstract class DataFetchHelper<T>(
         cacheKey: String?
     ): Resource<T> {
         val resource = Resource<T>()
-        resource.dataFetchStyleResult = Result.NO_FETCH
-        resource.dataFetchStyle = dataFetchStyle ?: NETWORK_FIRST_LOCAL_FAILOVER
+        resource.dataFetchStyleResult = DataFetchStyle.Result.NO_FETCH
+        resource.dataFetchStyle = dataFetchStyle ?: DataFetchStyle.NETWORK_FIRST_LOCAL_FAILOVER
 
         if (onMainThread()) {
             throw IllegalThreadStateException("Cannot perform Network nor Local storage transactions on main thread!")
         }
 
         when (dataFetchStyle) {
-            NETWORK_FIRST_LOCAL_FAILOVER -> {
-                resource.data = refreshDataFromNetwork(resource, NETWORK_FIRST_LOCAL_FAILOVER)
+            DataFetchStyle.NETWORK_FIRST_LOCAL_FAILOVER -> {
+                resource.data = refreshDataFromNetwork(
+                    resource,
+                    DataFetchStyle.NETWORK_FIRST_LOCAL_FAILOVER
+                )
                 if (resource.data == null) {
                     log("Unable to get data from network, failing over to local")
                     resource.data = getDataFromLocal()
                     resource.fresh = false
-                    resource.dataFetchStyleResult = Result.LOCAL_DATA_NETWORK_FAIL
+                    resource.dataFetchStyleResult = DataFetchStyle.Result.LOCAL_DATA_NETWORK_FAIL
                 } else {
                     resource.fresh = true
-                    resource.dataFetchStyleResult = Result.NETWORK_DATA_FIRST
+                    resource.dataFetchStyleResult = DataFetchStyle.Result.NETWORK_DATA_FIRST
                 }
             }
-            NETWORK_ONLY -> {
-                resource.data = refreshDataFromNetwork(resource, NETWORK_ONLY)
+            DataFetchStyle.NETWORK_ONLY -> {
+                resource.data = refreshDataFromNetwork(resource, DataFetchStyle.NETWORK_ONLY)
                 resource.fresh = true
-                resource.dataFetchStyleResult = Result.NETWORK_DATA_ONLY
+                resource.dataFetchStyleResult = DataFetchStyle.Result.NETWORK_DATA_ONLY
             }
-            LOCAL_ONLY -> {
+            DataFetchStyle.LOCAL_ONLY -> {
                 resource.data = getDataFromLocal()
                 resource.fresh = true
-                resource.dataFetchStyleResult = Result.LOCAL_DATA_ONLY
+                resource.dataFetchStyleResult = DataFetchStyle.Result.LOCAL_DATA_ONLY
             }
-            LOCAL_FIRST_NETWORK_REFRESH_ALWAYS -> {
+            DataFetchStyle.LOCAL_FIRST_NETWORK_REFRESH_ALWAYS -> {
                 resource.data = getDataFromLocal()
                 //TODO:
                 //always refreshing following it
                 val dataFromNetwork =
-                    refreshDataFromNetwork(resource, LOCAL_FIRST_NETWORK_REFRESH_ALWAYS)
+                    refreshDataFromNetwork(
+                        resource,
+                        DataFetchStyle.LOCAL_FIRST_NETWORK_REFRESH_ALWAYS
+                    )
                 if (resource.data == null) {
                     log("Local data was empty, so returning data from network first")
                     resource.data = dataFromNetwork
-                    resource.dataFetchStyleResult = Result.NETWORK_DATA_LOCAL_MISSING
+                    resource.dataFetchStyleResult = DataFetchStyle.Result.NETWORK_DATA_LOCAL_MISSING
                 } else {
                     log("Returning local data first, refreshing in background")
-                    resource.dataFetchStyleResult = Result.LOCAL_DATA_FIRST
+                    resource.dataFetchStyleResult = DataFetchStyle.Result.LOCAL_DATA_FIRST
                 }
                 resource.fresh = true
             }
-            LOCAL_FIRST_UNTIL_STALE -> {
+            DataFetchStyle.LOCAL_FIRST_UNTIL_STALE -> {
                 if (cacheKey == null || sharedPreferences == null) {
                     throw IllegalArgumentException("Cache key and shared preferences required for caching capabilities")
                 }
@@ -363,23 +373,28 @@ abstract class DataFetchHelper<T>(
                     )
                 ) {
                     log("Cache is stale")
-                    resource.data = refreshDataFromNetwork(resource, LOCAL_FIRST_UNTIL_STALE)
+                    resource.data = refreshDataFromNetwork(
+                        resource,
+                        DataFetchStyle.LOCAL_FIRST_UNTIL_STALE
+                    )
                     if (resource.data == null) {
                         log("Unsuccessfully stored fresh data from network, getting stale data from local")
                         resource.data = getDataFromLocal()
                         resource.fresh = false
-                        resource.dataFetchStyleResult = Result.LOCAL_DATA_NETWORK_FAIL
+                        resource.dataFetchStyleResult =
+                            DataFetchStyle.Result.LOCAL_DATA_NETWORK_FAIL
                     } else {
                         log("Successfully stored fresh data from network")
                         resource.fresh = true
-                        resource.dataFetchStyleResult = Result.NETWORK_DATA_LOCAL_STALE
+                        resource.dataFetchStyleResult =
+                            DataFetchStyle.Result.NETWORK_DATA_LOCAL_STALE
                         RepositoryUtil.resetCache(sharedPreferences, cacheKey, cacheDescriptor)
                     }
                 } else {
                     log("Cache isn't stale")
                     resource.data = getDataFromLocal()
                     resource.fresh = true
-                    resource.dataFetchStyleResult = Result.LOCAL_DATA_FRESH
+                    resource.dataFetchStyleResult = DataFetchStyle.Result.LOCAL_DATA_FRESH
                 }
             }
         }
@@ -401,9 +416,9 @@ abstract class DataFetchHelper<T>(
     ): T? {
         //Some styles depend on data getting stored locally, gently throw a log error to let them know
         val forceStoreLocally = arrayListOf(
-            NETWORK_FIRST_LOCAL_FAILOVER,
-            LOCAL_FIRST_NETWORK_REFRESH_ALWAYS,
-            LOCAL_FIRST_UNTIL_STALE
+            DataFetchStyle.NETWORK_FIRST_LOCAL_FAILOVER,
+            DataFetchStyle.LOCAL_FIRST_NETWORK_REFRESH_ALWAYS,
+            DataFetchStyle.LOCAL_FIRST_UNTIL_STALE
         ).contains(dataFetchStyle)
 
         val response: Response<out Any?>

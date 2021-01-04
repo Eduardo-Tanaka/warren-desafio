@@ -6,6 +6,7 @@ import br.com.eduardotanaka.warren.data.model.entity.Token
 import br.com.eduardotanaka.warren.ui.base.StatefulResource
 
 interface LoginViewModel {
+
     val token: LiveData<StatefulResource<Token?>>
 
     fun getToken(login: Login)

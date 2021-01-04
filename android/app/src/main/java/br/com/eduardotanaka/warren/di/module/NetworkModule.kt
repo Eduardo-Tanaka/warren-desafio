@@ -1,7 +1,7 @@
 package br.com.eduardotanaka.warren.di.module
 
 import br.com.eduardotanaka.warren.data.api.WarrenApi
-import br.com.eduardotanaka.warren.data.interceptor.WarrenInterceptor
+import br.com.eduardotanaka.warren.data.api.interceptor.WarrenInterceptor
 import br.com.warren.challange.BuildConfig
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
