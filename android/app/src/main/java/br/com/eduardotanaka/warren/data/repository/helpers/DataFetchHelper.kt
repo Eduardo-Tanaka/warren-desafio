@@ -401,7 +401,7 @@ abstract class DataFetchHelper<T>(
     ): T? {
         //Some styles depend on data getting stored locally, gently throw a log error to let them know
         val forceStoreLocally = arrayListOf(
-            DataFetchStyle.NETWORK_FIRST_LOCAL_FAILOVER,
+            NETWORK_FIRST_LOCAL_FAILOVER,
             LOCAL_FIRST_NETWORK_REFRESH_ALWAYS,
             LOCAL_FIRST_UNTIL_STALE
         ).contains(dataFetchStyle)
@@ -423,7 +423,9 @@ abstract class DataFetchHelper<T>(
 
             convertedToData = convertApiResponseToData(response)
             log("Converted data for storage")
-            storedFreshData = storeFreshDataToLocal(convertedToData)
+            if (forceStoreLocally) {
+                storedFreshData = storeFreshDataToLocal(convertedToData)
+            }
         } catch (e: Exception) {
             //IOExceptions, conversion exceptions, or local storage exception
             resource.throwable = e

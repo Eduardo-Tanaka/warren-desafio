@@ -1,5 +1,6 @@
 package br.com.eduardotanaka.warren.di.module
 
+import br.com.eduardotanaka.warren.data.api.WarrenApi
 import br.com.eduardotanaka.warren.data.interceptor.WarrenInterceptor
 import br.com.warren.challange.BuildConfig
 import com.google.gson.Gson
@@ -64,4 +65,8 @@ class NetworkModule {
         return retrofit.build()
     }
 
+    @Singleton
+    @Provides
+    fun providesWarrenApi(retrofit: Retrofit): WarrenApi =
+        retrofit.create(WarrenApi::class.java)
 }
