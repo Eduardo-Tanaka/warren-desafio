@@ -4,23 +4,23 @@ import androidx.annotation.StringRes
 import br.com.eduardotanaka.warren.data.repository.base.Resource
 
 /**
- * Wrapper class for easily emitting state information surrounding a resource
- * e.g. LiveData<StatefulResource<Artist>>
+ * Classe Wrapper para emitir facilmente informações de estado em torno de um recurso
+ * por exemplo. LiveData <StatefulResource <Artist>>
  */
 class StatefulResource<T> {
     /**
-     * Various states the resource could be in
+     * Vários estados em que o recurso pode estar
      */
     enum class State {
         LOADING,
-        SUCCESS, //doesn't guarantee hasData!
+        SUCCESS, //não garante hasData!
         ERROR,
         ERROR_API,
         ERROR_NETWORK
     }
 
     /**
-     * Current state
+     * Estado atual
      */
     var state = State.SUCCESS
         private set
@@ -35,7 +35,7 @@ class StatefulResource<T> {
     fun isLoading() = state == State.LOADING
 
     /**
-     * The corresponding resource
+     * O recurso correspondente
      */
     var resource: Resource<T>? = null
 
@@ -44,7 +44,7 @@ class StatefulResource<T> {
     fun hasData(): Boolean = resource?.hasData() ?: false
 
     /**
-     * Custom message resource
+     * Recurso de mensagem personalizada
      */
     @StringRes
     var message: Int? = null

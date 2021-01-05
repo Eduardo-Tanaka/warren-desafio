@@ -3,18 +3,18 @@ package br.com.eduardotanaka.warren.data.model.entity.base
 import br.com.eduardotanaka.warren.data.model.api.base.ApiResponseObject
 
 /**
- * This binds a contract between the locally stored model and an API response
+ * Isso vincula um contrato entre o modelo armazenado localmente e uma resposta da API
  *
- * The idea is that locally stored models should NOT be the same model we get back from the API request,
- * this interface defines how they're related.
+ * A ideia é que os modelos armazenados localmente NÃO devem ser o mesmo modelo que recebemos da solicitação de API,
+ * esta interface define como eles estão relacionados.
  *
  * Recursive Generics
- * @param X The model that reflects the ApiResponseObject
+ * @param X O modelo que reflete o ApiResponseObject
  * @param T : ApiResponseObject
  */
 interface ReflectsApiResponse<X, T : ApiResponseObject> {
     /**
-     * Map from the specified ApiResponse and return the instance of yourself
+     * Mapeia do ApiResponse especificado e retorne a sua instância
      * @param apiResponse T
      * @return
      */

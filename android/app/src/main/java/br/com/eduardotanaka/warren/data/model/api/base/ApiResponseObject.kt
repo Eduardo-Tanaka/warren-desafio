@@ -1,7 +1,6 @@
 package br.com.eduardotanaka.warren.data.model.api.base
 
 /**
- * This specifies the given class as one directly coming from an API request and should not be stored locally as is
+ * Isso especifica a classe fornecida como proveniente diretamente de uma solicitação de API e não deve ser armazenada localmente como está
  */
-interface ApiResponseObject {
-}
+interface ApiResponseObject

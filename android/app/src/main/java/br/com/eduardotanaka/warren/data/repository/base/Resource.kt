@@ -5,66 +5,67 @@ import retrofit2.Response
 import java.io.IOException
 
 /**
- * A flexible resource wrapper to gather and propagate properties associated to it
- * @param T The type of data is wraps
+ * Um wrapper de recursos flexível para reunir e propagar propriedades associadas a ele
+ * @param T O tipo de dado englobado
  */
 class Resource<T> {
     /**
-     * The data corresponding to the resource
+     * Os dados correspondentes ao recurso
      */
     var data: T? = null
+
     /**
-     * A response to carry to the consumer
+     * Uma resposta para levar ao consumidor
      */
     var response: Response<out Any?>? = null
 
     /**
-     * An exception that can be consumed
+     * Uma exceção que pode ser consumida
      */
     var throwable: Throwable? = null
 
     /**
-     * Describes how this recourse was fetched
+     * Descreve como este recurso foi obtido
      */
     var dataFetchStyle =
         DataFetchHelper.DataFetchStyle.NETWORK_FIRST_LOCAL_FAILOVER
 
     /**
-     * Describes the resulting fetch style
-     * Allows consumer to specify that the data is not fresh because of network, etc.
+     * Descreve o estilo de busca resultante
+     * Permite ao consumidor especificar que os dados não são novos por causa da rede, etc.
      */
     var dataFetchStyleResult = DataFetchHelper.DataFetchStyle.Result.NO_FETCH
 
     /**
-     * If the resource contains data
+     * Se o recurso contém dados
      */
     fun hasData() = data != null
 
     /**
-     * If this resource is considered fresh (in correspondence to [DataFetchHelper.DataFetchStyle])
+     * Se este recurso for considerado novo (em correspondência com [DataFetchHelper.DataFetchStyle])
      */
     var fresh: Boolean = false
 
     /**
-     * Non locale safe error message to propagate
+     * Mensagem de erro local não segura para ser propagada
      */
     var errorMessage: String? = null
 
     /**
-     * If a network error happened during the fetch
-     * Doesn't necessarily mean "fresh" data wasn't received, see [DataFetchHelper.DataFetchStyle.LOCAL_FIRST_NETWORK_REFRESH_ALWAYS]
+     * Se um erro de rede aconteceu durante a busca
+     * Não significa necessariamente que dados "novos" não foram recebidos, consulte [DataFetchHelper.DataFetchStyle.LOCAL_FIRST_NETWORK_REFRESH_ALWAYS]
      */
     fun isNetworkIssue(): Boolean = throwable is IOException
 
     /**
-     * If an api issue happened during the fetch
-     * Again, doesn't necessarily mean "fresh" data wasn't received
-     * e.g. 404 isNotFound(), 5XX Service Error, etc.
+     * Se um problema de API aconteceu durante a busca
+     * Novamente, não significa necessariamente que dados "novos" não foram recebidos
+     * por exemplo. 404 isNotFound(), 5XX Service Error, etc.
      */
     fun isApiIssue(): Boolean = !(response?.isSuccessful ?: true)
 
     /**
-     * Copy the resource to a new data type (or the same)
+     * Copia o recurso para um novo tipo de dados (ou o mesmo)
      * @param newData S
      * @return Resource<S>
      */

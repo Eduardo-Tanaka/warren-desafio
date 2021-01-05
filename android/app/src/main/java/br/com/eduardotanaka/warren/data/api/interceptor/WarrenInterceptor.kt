@@ -10,6 +10,7 @@ class WarrenInterceptor : Interceptor {
         const val APPLICATION_JSON = "application/json"
     }
 
+    // intercepta todas as requisicoes para adicionar no header "Accept": "application/json"
     override fun intercept(chain: Interceptor.Chain): Response {
         val url = chain.request()
             .url

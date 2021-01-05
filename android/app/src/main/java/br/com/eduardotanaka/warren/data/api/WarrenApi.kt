@@ -3,7 +3,6 @@ package br.com.eduardotanaka.warren.data.api
 import br.com.eduardotanaka.warren.data.model.Login
 import br.com.eduardotanaka.warren.data.model.ObjetivoResponse
 import br.com.eduardotanaka.warren.data.model.api.LoginResponse
-import br.com.eduardotanaka.warren.data.model.entity.Token
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body

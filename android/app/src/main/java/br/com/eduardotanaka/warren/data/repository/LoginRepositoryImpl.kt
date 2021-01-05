@@ -16,7 +16,7 @@ class LoginRepositoryImpl @Inject constructor(
 
     override suspend fun getToken(login: Login): Resource<Token?> {
         val dataFetchHelper = object : DataFetchHelper.NetworkOnly<Token?>(
-            "LoginRepositoryImpl"
+            LoginRepositoryImpl::class.simpleName.toString()
         ) {
             override suspend fun getDataFromNetwork(): Response<out Any?> {
                 return warrenApi.buscaToken(login)

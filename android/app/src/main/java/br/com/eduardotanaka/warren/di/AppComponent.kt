@@ -1,7 +1,7 @@
 package br.com.eduardotanaka.warren.di
 
-import br.com.eduardotanaka.warren.AppApplication
 import android.app.Application
+import br.com.eduardotanaka.warren.AppApplication
 import br.com.eduardotanaka.warren.di.module.*
 import dagger.BindsInstance
 import dagger.Component

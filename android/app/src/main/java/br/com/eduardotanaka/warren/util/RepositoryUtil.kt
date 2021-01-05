@@ -9,9 +9,9 @@ object RepositoryUtil {
 
     /**
      *
-     * @param cacheKey String - A unique string to represent the cache, ex: GetArtist
-     * @param keyDescriptor String - A string to give a secondary description ex: ACDC
-     * @param cacheLengthSeconds Long - How long is the cache considered fresh (use TimeUnit.[MINUTES/HOURS/DAYS].toSeconds(x))
+     * @param cacheKey String - Uma string exclusiva para representar o cache
+     * @param keyDescriptor String - Uma string para dar uma descrição secundária
+     * @param cacheLengthSeconds Long - Por quanto tempo o cache é considerado novo (use TimeUnit. [MINUTES / HOURS / DAYS] .toSeconds (x))
      * @return Boolean
      */
     fun isCacheStale(
