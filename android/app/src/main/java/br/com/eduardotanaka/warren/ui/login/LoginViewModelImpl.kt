@@ -1,5 +1,6 @@
 package br.com.eduardotanaka.warren.ui.login
 
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import br.com.eduardotanaka.warren.data.model.Login
@@ -8,11 +9,14 @@ import br.com.eduardotanaka.warren.data.repository.LoginRepositoryImpl
 import br.com.eduardotanaka.warren.ui.base.BaseViewModel
 import br.com.eduardotanaka.warren.ui.base.StatefulResource
 import br.com.warren.challange.R
+import com.auth0.android.jwt.JWT
+import org.threeten.bp.LocalDateTime
 import javax.inject.Inject
 
 class LoginViewModelImpl
 @Inject constructor(
     private val loginRepositoryImpl: LoginRepositoryImpl,
+    private val sharedPreferences: SharedPreferences
 ) : BaseViewModel(), LoginViewModel {
 
     private val mutableToken: MutableLiveData<StatefulResource<Token?>> = MutableLiveData()
@@ -47,5 +51,17 @@ class LoginViewModelImpl
                     }
             }
         }
+    }
+
+    override fun verificaValidadeToken() : Boolean {
+        val token = sharedPreferences.getString("TOKEN", "")
+        if (token.equals("")) {
+            return true
+        }
+
+        val jwt = JWT(token!!)
+
+        // adiciona vários segundos de margem para a verificação retornar false já que o token gerado sempre vem com ext: 1571260104 (16/10/2019)
+        return jwt.isExpired(1000000000000000000); // segundos de margem
     }
 }

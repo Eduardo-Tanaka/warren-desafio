@@ -45,6 +45,7 @@ dependencies {
     def coroutinesVersion = '1.4.2'
     def daggerVersion = '2.30.1'
     def fragmentKtxVersion = '1.2.0'
+    def jwt = '2.0.0'
     def jwThreetenABP = '1.2.2'
     def lifecycleVersion = '2.2.0'
     def okhttpVersion = '4.4.0'
@@ -78,6 +79,9 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+
+    // JWT
+    implementation "com.auth0.android:jwtdecode:$jwt"
 
     // okhttp (network middleware)
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"

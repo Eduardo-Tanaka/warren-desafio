@@ -10,4 +10,6 @@ interface LoginViewModel {
     val token: LiveData<StatefulResource<Token?>>
 
     fun getToken(login: Login)
+
+    fun verificaValidadeToken(): Boolean
 }

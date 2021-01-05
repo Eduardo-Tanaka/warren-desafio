@@ -1,5 +1,6 @@
 package br.com.eduardotanaka.warren.ui.login
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
@@ -16,6 +17,14 @@ class LoginActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        val tokenExpirado = viewModel.verificaValidadeToken()
+        Log.d(tag, tokenExpirado.toString())
+
+        // possui token válido pula a tela de login
+        if (!tokenExpirado) {
+            finish()
+        }
 
         val login = Login(
             email = "mobile_test@warrenbrasil.com",
